@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ask a Question</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      /* Variables */
+      :root {
+        --primary: #0a95ff;
+        --primary-dark: #0074cc;
+        --primary-light: #e1ecf4;
+        --secondary: #2e2e2e;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --border: #d6d9dc;
+        --text: #232629;
+        --text-light: #6a737c;
+        --background: #f8f9f9;
+        --surface: #ffffff;
+        --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        --radius: 8px;
+        --transition: 0.3s cubic-bezier(.4,0,.2,1);
+      }
+
+      /* Reset and base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: linear-gradient(135deg, var(--background) 0%, #e1e5ea 100%);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      /* Typography */
+      h1 {
+        font-size: 32px;
+        margin-bottom: 24px;
+        color: var(--secondary);
+        text-align: center;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      h1::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: 3px;
+      }
+
+      h3 {
+        font-size: 20px;
+        margin-bottom: 12px;
+        color: var(--secondary);
+      }
+
+      a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color var(--transition);
+      }
+
+      a:hover {
+        color: var(--primary-dark);
+      }
+
+      .page-title {
+        margin-bottom: 32px;
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      /* Forms */
+      .form-container {
+        background-color: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px;
+        margin: 0 auto;
+        max-width: 800px;
+        animation: fadeInUp 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--secondary);
+        transition: color var(--transition);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 15px;
+        transition: all var(--transition);
+        background-color: var(--surface);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(10, 149, 255, 0.2);
+        transform: translateY(-1px);
+      }
+
+      textarea.form-control {
+        min-height: 200px;
+        resize: vertical;
+      }
+
+      .form-control.error {
+        border-color: var(--danger);
+        animation: shake 0.5s;
+      }
+
+      .error-message {
+        color: var(--danger);
+        font-size: 13px;
+        margin-top: 5px;
+        display: none;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      /* Video upload */
+      .video-section {
+        border-top: 1px solid var(--border);
+        padding-top: 24px;
+        margin-top: 24px;
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      .video-info {
+        font-size: 14px;
+        color: var(--text-light);
+        margin-bottom: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .video-info i {
+        margin-right: 8px;
+        color: var(--primary);
+      }
+
+      #video-preview-container {
+        background-color: var(--background);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-top: 16px;
+        border: 2px dashed var(--border);
+        transition: all var(--transition);
+      }
+
+      #video-preview-container:hover {
+        border-color: var(--primary);
+        background-color: var(--primary-light);
+      }
+
+      #video-details {
+        font-size: 13px;
+        color: var(--text-light);
+        margin-top: 12px;
+        padding: 8px;
+        background-color: var(--surface);
+        border-radius: var(--radius);
+      }
+
+      /* Tags input */
+      .tag-item {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(90deg, var(--primary-light) 0%, #d0e3f1 100%);
+        color: var(--primary-dark);
+        border-radius: 20px;
+        padding: 6px 12px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all var(--transition);
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .tag-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .tag-item .remove-tag {
+        margin-left: 8px;
+        cursor: pointer;
+        color: var(--primary-dark);
+        transition: color var(--transition);
+      }
+
+      .tag-item .remove-tag:hover {
+        color: var(--danger);
+        transform: scale(1.2);
+      }
+
+      #tags-container {
+        margin-top: 12px;
+        min-height: 40px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 15px;
+        border: none;
+        transition: all var(--transition);
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(10, 149, 255, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(10, 149, 255, 0.4);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary:disabled {
+        background: linear-gradient(90deg, #96caff 0%, #7ab3e0 100%);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .form-container {
+          padding: 24px;
+        }
+        
+        h1 {
+          font-size: 28px;
+        }
+        
+        .video-info {
+          flex-direction: column;
+          gap: 8px;
+        }
+        
+        .btn {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+      }
+
+      /* Loading state */
+      .btn.loading {
+        pointer-events: none;
+        opacity: 0.8;
+      }
+
+      .btn.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+</head>
+<body>
+    <div id="ask-question-page" class="page">
+        <div class="page-title">
+            <h1>Ask a Question</h1>
+        </div>
+        
+        <div class="form-container">
+            <form id="question-form">
+                <div class="form-group">
+                    <label for="question-title">Title</label>
+                    <input type="text" id="question-title" class="form-control" 
+                           placeholder="What's your question? Be specific." required>
+                    <div class="error-message" id="title-error">Please enter a title for your question</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question-body">Body</label>
+                    <textarea id="question-body" class="form-control" 
+                              placeholder="Include all the information someone would need to answer your question" required></textarea>
+                    <div class="error-message" id="body-error">Please provide details in the body of your question</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question-tags">Tags</label>
+                    <input type="text" id="question-tags" class="form-control" 
+                           placeholder="Type a tag and press Enter (up to 5 tags)">
+                    <div id="tags-container"></div>
+                    <div class="error-message" id="tags-error">Please add at least one tag</div>
+                </div>
+                
+                <div class="form-group video-section">
+                    <h3>Or Upload Video Question</h3>
+                    <p class="video-info">
+                        <i class="fas fa-clock"></i> Available from 2 PM to 7 PM only
+                        <i class="fas fa-video ml-2"></i> Max 2 minutes
+                        <i class="fas fa-file-video ml-2"></i> Max 50MB
+                    </p>
+                    <input type="file" id="video-upload" accept="video/*" class="form-control">
+                    <div id="video-preview-container" style="display: none;">
+                        <video id="video-preview" controls style="max-width: 100%; max-height: 300px;"></video>
+                        <p id="video-details"></p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" id="post-question-btn" class="btn btn-primary">Post Your Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tag management
+        const tagsInput = document.getElementById('question-tags');
+        const tagsContainer = document.getElementById('tags-container');
+        const tagsError = document.getElementById('tags-error');
+        let tags = [];
+
+        tagsInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ',') {
+                event.preventDefault();
+                const tagText = this.value.trim();
+                
+                if (tagText && tags.length < 5 && !tags.includes(tagText)) {
+                    addTag(tagText);
+                    this.value = '';
+                } else if (tags.length >= 5) {
+                    tagsError.textContent = 'You can only add up to 5 tags';
+                    tagsError.style.display = 'block';
+                    setTimeout(() => { tagsError.style.display = 'none'; }, 3000);
+                }
+            }
+        });
+
+        function addTag(text) {
+            tags.push(text);
+            
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag-item';
+            tagElement.innerHTML = `${text} <span class="remove-tag" data-tag="${text}">&times;</span>`;
+            tagsContainer.appendChild(tagElement);
+            
+            tagsError.style.display = 'none';
+        }
+
+        // Remove tags when clicking the x
+        tagsContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('remove-tag')) {
+                const tagToRemove = event.target.getAttribute('data-tag');
+                tags = tags.filter(tag => tag !== tagToRemove);
+                event.target.parentElement.remove();
+            }
+        });
+
+        // Video upload handling
+        const videoUpload = document.getElementById('video-upload');
+        const videoPreview = document.getElementById('video-preview');
+        const videoPreviewContainer = document.getElementById('video-preview-container');
+        const videoDetails = document.getElementById('video-details');
+
+        videoUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check file size (max 50MB)
+            const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+            if (file.size > maxSize) {
+                alert('Video size exceeds the maximum allowed (50MB)');
+                this.value = '';
+                return;
+            }
+            
+            // Check if current time is between 2 PM and 7 PM
+            const now = new Date();
+            const hours = now.getHours();
+            if (hours < 14 || hours >= 19) {
+                alert('Video uploads are only available from 2 PM to 7 PM');
+                this.value = '';
+                return;
+            }
+            
+            // Create object URL for preview
+            const videoURL = URL.createObjectURL(file);
+            videoPreview.src = videoURL;
+            
+            // Show preview container
+            videoPreviewContainer.style.display = 'block';
+            
+            // Add event listener to check video duration
+            videoPreview.onloadedmetadata = function() {
+                const duration = videoPreview.duration;
+                if (duration > 120) { // 2 minutes in seconds
+                    alert('Video length exceeds the maximum allowed (2 minutes)');
+                    videoUpload.value = '';
+                    videoPreviewContainer.style.display = 'none';
+                    return;
+                }
+                
+                // Display file details
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                const durationFormatted = Math.floor(duration / 60) + ':' + 
+                                         (Math.floor(duration % 60) < 10 ? '0' : '') + 
+                                         Math.floor(duration % 60);
+                
+                videoDetails.textContent = `${file.name} (${fileSize} MB, ${durationFormatted})`;
+            };
+        });
+
+        // Form validation and submission
+        const questionForm = document.getElementById('question-form');
+        const titleInput = document.getElementById('question-title');
+        const bodyInput = document.getElementById('question-body');
+        const titleError = document.getElementById('title-error');
+        const bodyError = document.getElementById('body-error');
+
+        questionForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            let isValid = true;
+            
+            // Validate title
+            if (!titleInput.value.trim()) {
+                titleInput.classList.add('error');
+                titleError.style.display = 'block';
+                isValid = false;
+            } else {
+                titleInput.classList.remove('error');
+                titleError.style.display = 'none';
+            }
+            
+            // Validate body
+            if (!bodyInput.value.trim()) {
+                bodyInput.classList.add('error');
+                bodyError.style.display = 'block';
+                isValid = false;
+            } else {
+                bodyInput.classList.remove('error');
+                bodyError.style.display = 'none';
+            }
+            
+            // Validate at least one tag
+            if (tags.length === 0) {
+                tagsError.textContent = 'Please add at least one tag';
+                tagsError.style.display = 'block';
+                isValid = false;
+            } else {
+                tagsError.style.display = 'none';
+            }
+            
+            if (isValid) {
+                // Get the form data
+                const questionData = {
+                    title: titleInput.value.trim(),
+                    body: bodyInput.value.trim(),
+                    tags: tags,
+                    video: videoUpload.files[0] ? videoUpload.files[0].name : null
+                };
+                
+                console.log('Question data:', questionData);
+                alert('Your question has been posted successfully!');
+                questionForm.reset();
+                tags = [];
+                tagsContainer.innerHTML = '';
+                videoPreviewContainer.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

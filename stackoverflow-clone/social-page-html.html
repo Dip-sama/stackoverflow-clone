@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Space</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            line-height: 1.5;
+        }
+        
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #1877f2;
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ccc;
+            color: #65676b;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddfe2;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .social-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .post {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .post-content {
+            margin-bottom: 15px;
+        }
+        
+        .post-media {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .post-actions {
+            display: flex;
+            border-top: 1px solid #dddfe2;
+            padding-top: 10px;
+        }
+        
+        .post-action {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+            color: #65676b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .post-action:hover {
+            background-color: #f2f2f2;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="social-page" class="page">
+        <div class="page-title">
+            <h1>Public Space</h1>
+            <button class="btn btn-primary" id="create-post-btn">Create Post</button>
+        </div>
+        
+        <div class="form-container" id="post-form">
+            <div class="form-group">
+                <label for="post-content">What's on your mind?</label>
+                <textarea id="post-content" class="form-control" placeholder="Share something with the community..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="post-media">Add Photo/Video</label>
+                <input type="file" id="post-media" class="form-control" accept="image/*,video/*">
+                <div id="media-preview-container" style="display: none; margin-top: 10px;">
+                    <img id="image-preview" style="max-width: 100%; max-height: 300px; display: none;">
+                    <video id="video-post-preview" controls style="max-width: 100%; max-height: 300px; display: none;"></video>
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="publish-post-btn" class="btn btn-primary">Publish</button>
+                <button id="cancel-post-btn" class="btn btn-outline">Cancel</button>
+            </div>
+        </div>
+        
+        <div class="social-feed">
+            <div class="post">
+                <div class="post-header">
+                    <img src="Max-R_Headshot (1).jpg" alt="User">
+                    <div>
+                        <h4>Alex Johnson</h4>
+                        <small>2 hours ago</small>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Just solved a really challenging JavaScript problem! Check out my solution in the comments.</p>
+                </div>
+                <img src="Example-of-code-sample-SpringBoot-framework.png" alt="Code Sample" class="post-media">
+                <div class="post-actions">
+                    <div class="post-action"><i class="fa fa-thumbs-up"></i> Like (15)</div>
+                    <div class="post-action"><i class="fa fa-comment"></i> Comment (3)</div>
+                    <div class="post-action"><i class="fa fa-share"></i> Share</div>
+                </div>
+            </div>
+            
+            <div class="post">
+                <div class="post-header">
+                    <img src="photo-1633332755192-727a05c4013d.jpg" alt="User">
+                    <div>
+                        <h4>Sarah Williams</h4>
+                        <small>Yesterday</small>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Just attended an amazing workshop on React Hooks. Here's what I learned!</p>
+                </div>
+                <div class="post-actions">
+                    <div class="post-action"><i class="fa fa-thumbs-up"></i> Like (27)</div>
+                    <div class="post-action"><i class="fa fa-comment"></i> Comment (8)</div>
+                    <div class="post-action"><i class="fa fa-share"></i> Share</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to make the page interactive
+        document.addEventListener('DOMContentLoaded', function() {
+            const createPostBtn = document.getElementById('create-post-btn');
+            const postForm = document.getElementById('post-form');
+            const cancelPostBtn = document.getElementById('cancel-post-btn');
+            const publishPostBtn = document.getElementById('publish-post-btn');
+            const postMediaInput = document.getElementById('post-media');
+            const mediaPreviewContainer = document.getElementById('media-preview-container');
+            const imagePreview = document.getElementById('image-preview');
+            const videoPreview = document.getElementById('video-post-preview');
+            const socialFeed = document.querySelector('.social-feed');
+            
+            // Show post form when Create Post button is clicked
+            createPostBtn.addEventListener('click', function() {
+                postForm.style.display = 'block';
+            });
+            
+            // Hide post form when Cancel button is clicked
+            cancelPostBtn.addEventListener('click', function() {
+                postForm.style.display = 'none';
+                document.getElementById('post-content').value = '';
+                postMediaInput.value = '';
+                mediaPreviewContainer.style.display = 'none';
+            });
+            
+            // Handle media preview
+            postMediaInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const fileType = file.type;
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        mediaPreviewContainer.style.display = 'block';
+                        
+                        if (fileType.startsWith('image/')) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                            videoPreview.style.display = 'none';
+                        } else if (fileType.startsWith('video/')) {
+                            videoPreview.src = e.target.result;
+                            videoPreview.style.display = 'block';
+                            imagePreview.style.display = 'none';
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Publish post
+            publishPostBtn.addEventListener('click', function() {
+                const postContent = document.getElementById('post-content').value;
+                
+                if (postContent.trim() === '') {
+                    alert('Please enter some content for your post.');
+                    return;
+                }
+                
+                // Create new post element
+                const newPost = document.createElement('div');
+                newPost.className = 'post';
+                
+                // Get current time
+                const now = new Date();
+                const timeString = 'Just now';
+                
+                // Create post HTML
+                newPost.innerHTML = `
+                    <div class="post-header">
+                        <img src="/api/placeholder/80/80" alt="User">
+                        <div>
+                            <h4>Current User</h4>
+                            <small>${timeString}</small>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p>${postContent}</p>
+                    </div>
+                `;
+                
+                // Add media if present
+                if (postMediaInput.files.length > 0) {
+                    const file = postMediaInput.files[0];
+                    const fileType = file.type;
+                    
+                    if (fileType.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = imagePreview.src;
+                        img.className = 'post-media';
+                        img.alt = 'Posted image';
+                        newPost.appendChild(img);
+                    } else if (fileType.startsWith('video/')) {
+                        const video = document.createElement('video');
+                        video.src = videoPreview.src;
+                        video.className = 'post-media';
+                        video.controls = true;
+                        newPost.appendChild(video);
+                    }
+                }
+                
+                // Add post actions
+                const actions = document.createElement('div');
+                actions.className = 'post-actions';
+                actions.innerHTML = `
+                    <div class="post-action"><i class="fa fa-thumbs-up"></i> Like (0)</div>
+                    <div class="post-action"><i class="fa fa-comment"></i> Comment (0)</div>
+                    <div class="post-action"><i class="fa fa-share"></i> Share</div>
+                `;
+                newPost.appendChild(actions);
+                
+                // Add post to feed (at the top)
+                socialFeed.insertBefore(newPost, socialFeed.firstChild);
+                
+                // Reset form
+                document.getElementById('post-content').value = '';
+                postMediaInput.value = '';
+                mediaPreviewContainer.style.display = 'none';
+                postForm.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

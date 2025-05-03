@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - StackOverflow Clone</title>
+    <style>
+        :root {
+            --primary: #0a95ff;
+            --primary-dark: #0077cc;
+            --secondary: #f48024;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --text: #232629;
+            --text-light: #6a737c;
+            --border: #e4e6e8;
+            --success: #43a047;
+            --danger: #e53935;
+            --shadow: 0 2px 8px rgba(44,62,80,0.08);
+            --radius: 10px;
+            --transition: 0.3s cubic-bezier(.4,0,.2,1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text);
+        }
+        
+        .auth-container {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInUp 0.6s cubic-bezier(.4,0,.2,1);
+        }
+        
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10,149,255,0.10);
+            outline: none;
+        }
+        
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: 
+                background var(--transition),
+                box-shadow var(--transition),
+                transform var(--transition);
+        }
+        
+        .submit-button:hover {
+            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
+            box-shadow: 0 4px 16px rgba(10,149,255,0.20);
+            transform: translateY(-2px);
+        }
+        
+        .auth-divider {
+            text-align: center;
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .auth-divider::before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: var(--border);
+            position: absolute;
+            top: 50%;
+        }
+        
+        .auth-divider span {
+            background-color: var(--surface);
+            padding: 0 16px;
+            position: relative;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .google-button, .phone-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: var(--surface);
+            transition: 
+                background-color var(--transition),
+                border-color var(--transition),
+                transform var(--transition);
+        }
+        
+        .google-button:hover, .phone-button:hover {
+            background-color: var(--background);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .google-button img, .phone-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition);
+        }
+        
+        .forgot-password a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* Phone verification modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.4s;
+        }
+        
+        .modal-content {
+            background-color: var(--surface);
+            padding: 32px;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 350px;
+            animation: slideUp 0.4s;
+        }
+        
+        .close-button {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color var(--transition);
+        }
+        
+        .close-button:hover {
+            color: var(--danger);
+        }
+        
+        .otp-inputs {
+            display: flex;
+            gap: 8px;
+            margin: 20px 0;
+        }
+        
+        .otp-inputs input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        
+        .otp-inputs input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10,149,255,0.10);
+            outline: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Media queries for responsiveness */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 24px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            .form-group input {
+                padding: 10px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Login</h2>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="submit-button">Log in</button>
+        </form>
+        
+        <div class="auth-divider">
+            <span>OR</span>
+        </div>
+        
+        <div class="social-login">
+            <button id="google-login" class="google-button">
+                <img src="google-g-2015-logo.png" alt="Google logo">
+                Continue with Google
+            </button>
+            
+            <button id="phone-login" class="phone-button">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMiAxNi45MlYxOS45MmE1IDUgMCAwIDAgLTQuNTkgNSAxLjIgMS4yIDAgMCAwIC0xLjE2IC45IDEgMSAwIDAgMCAtMS4wNSAuNjMgMyAzIDAgMCAwIC0yLjM0IDNBMyAzIDAgMCAwIC0zLjg3IDEuOTJMMiAxLjkyIi8+PHBhdGggZD0iTTIyIDYuOTJDMjIgMy40IDE5LjQzIDEuOTIgMTYgMS45MkgxMEM2LjU3IDEuOTIgNCAxLjM0IDQgNi45MlYxNS45MkM0IDE5LjM0IDYuNTcgMjAuOTIgMTAgMjAuOTJIMTYiLz48bGluZSB4MT0iMTIiIHkxPSIxMC45MiIgeDI9IjE2IiB5Mj0iMTAuOTIiLz48bGluZSB4MT0iMTIiIHkxPSIxNC45MiIgeDI9IjE2IiB5Mj0iMTQuOTIiLz48bGluZSB4MT0iOCIgeTE9IjEwLjkyIiB4Mj0iOCIgeTI9IjEwLjkyIi8+PGxpbmUgeDE9IjgiIHkxPSIxNC45MiIgeDI9IjgiIHkyPSIxNC45MiIvPjwvc3ZnPg==" alt="Phone icon">
+                Continue with Phone
+            </button>
+        </div>
+        
+        <div class="forgot-password">
+            <a href="reset.html">Forgot password?</a>
+        </div>
+    </div>
+    
+    <!-- Phone verification modal -->
+    <div id="phone-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-modal">&times;</span>
+            <h3>Verify Your Phone</h3>
+            <div class="form-group">
+                <label for="phone-number">Phone Number</label>
+                <input type="tel" id="phone-number" placeholder="+1 234 567 8900">
+            </div>
+            <button id="send-otp" class="submit-button">Send OTP</button>
+            
+            <div id="verification-section" style="display: none;">
+                <p>Enter the 6-digit code sent to your phone</p>
+                <div class="otp-inputs">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                </div>
+                <button id="verify-otp" class="submit-button">Verify OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Google Sign-In API
+        function initGoogleSignIn() {
+            const googleButton = document.getElementById('google-login');
+            
+            googleButton.addEventListener('click', function() {
+                // This would typically use the Google Identity Services library
+                // For demonstration, we'll simulate a successful login
+                console.log('Google Sign-In clicked');
+                
+                // In a real implementation, you would use:
+                // Google Identity Services or Google Sign-In API
+                simulateGoogleLogin();
+            });
+        }
+        
+        function simulateGoogleLogin() {
+            // Simulate API call delay
+            setTimeout(() => {
+                // In a real app, this would be the response from Google
+                const googleUser = {
+                    id: 'google_12345',
+                    email: 'user@example.com',
+                    name: 'Test User',
+                    picture: 'https://example.com/profile.jpg'
+                };
+                
+                // Send to your server
+                loginWithGoogle(googleUser);
+            }, 1000);
+        }
+        
+        function loginWithGoogle(googleUser) {
+            // In a real app, send this data to your server
+            fetch('/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(googleUser)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = 'stackoverflow-clone.html';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            
+            // For demo purposes, redirect after simulated login
+            console.log('Logged in with Google:', googleUser);
+            alert('Successfully logged in with Google! Redirecting...');
+            window.location.href = 'stackoverflow-clone.html';
+        }
+        
+        // Phone authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneModal = document.getElementById('phone-modal');
+            const phoneButton = document.getElementById('phone-login');
+            const closeModal = document.getElementById('close-modal');
+            const sendOtpButton = document.getElementById('send-otp');
+            const verifyOtpButton = document.getElementById('verify-otp');
+            const verificationSection = document.getElementById('verification-section');
+            const otpInputs = document.querySelectorAll('.otp-input');
+            
+            // Show phone modal
+            phoneButton.addEventListener('click', function() {
+                phoneModal.style.display = 'flex';
+            });
+            
+            // Close phone modal
+            closeModal.addEventListener('click', function() {
+                phoneModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === phoneModal) {
+                    phoneModal.style.display = 'none';
+                }
+            });
+            
+            // Send OTP
+            sendOtpButton.addEventListener('click', function() {
+                const phoneNumber = document.getElementById('phone-number').value;
+                if (!phoneNumber) {
+                    alert('Please enter a phone number');
+                    return;
+                }
+                
+                // In a real app, send request to server to send OTP
+                alert(`OTP sent to ${phoneNumber}`);
+                verificationSection.style.display = 'block';
+                
+                // Focus on first OTP input
+                otpInputs[0].focus();
+            });
+            
+            // OTP input handling
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('keyup', function(e) {
+                    // Move to next input when a digit is entered
+                    if (e.key >= 0 && e.key <= 9) {
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        }
+                    }
+                    
+                    // Handle backspace
+                    if (e.key === 'Backspace') {
+                        if (index > 0) {
+                            otpInputs[index - 1].focus();
+                        }
+                    }
+                });
+            });
+            
+            // Verify OTP
+            verifyOtpButton.addEventListener('click', function() {
+                let otp = '';
+                otpInputs.forEach(input => {
+                    otp += input.value;
+                });
+                
+                if (otp.length !== 6) {
+                    alert('Please enter all 6 digits');
+                    return;
+                }
+                
+                // In a real app, send OTP to server for verification
+                console.log('Verifying OTP:', otp);
+                
+                // For demo, simulate successful verification
+                alert('Phone verified successfully! Redirecting...');
+                window.location.href = 'stackoverflow-clone.html';
+            });
+            
+            // Regular login form submission
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // In a real app, send to server for authentication
+                console.log('Login attempt:', { email, password });
+                
+                // For demo purposes
+                alert('Login successful! Redirecting...');
+                window.location.href = 'stackoverflow-clone.html';
+            });
+        });
+        
+        // Initialize Google Sign-In when loaded
+        window.onload = function() {
+            initGoogleSignIn();
+        };
+    </script>
+</body>
+</html>

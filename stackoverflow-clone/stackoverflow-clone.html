@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StackOverflow Clone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+        :root {
+            --primary: #f48024;
+            --primary-dark: #c35600;
+            --secondary: #0077cc;
+            --secondary-dark: #005999;
+            --background: #f8f9fa;
+            --surface: #fff;
+            --text: #232629;
+            --text-light: #6a737c;
+            --border: #e4e6e8;
+            --success: #43a047;
+            --danger: #e53935;
+            --shadow: 0 2px 8px rgba(44,62,80,0.08);
+            --radius: 10px;
+            --transition: 0.3s cubic-bezier(.4,0,.2,1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--surface);
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            transition: box-shadow var(--transition);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 30px;
+            margin-right: 5px;
+            transition: transform var(--transition);
+        }
+        
+        .logo img:hover {
+            transform: scale(1.08) rotate(-3deg);
+        }
+        
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 15px;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        
+        .search-bar input:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0,119,204,0.10);
+            outline: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .profile-link {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-pic {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 5px;
+            object-fit: cover;
+            border: 2px solid var(--secondary);
+            transition: box-shadow var(--transition), border-color var(--transition);
+        }
+        
+        .profile-pic:hover {
+            box-shadow: 0 0 0 4px rgba(0,119,204,0.15);
+            border-color: var(--primary);
+        }
+        
+        /* Main Content Styles */
+        main {
+            margin-top: 60px;
+            min-height: calc(100vh - 120px);
+            padding: 20px 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .page-title {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            transition: 
+                background var(--transition),
+                box-shadow var(--transition),
+                transform var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 16px rgba(0,119,204,0.18);
+        }
+        
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .btn i {
+            transition: transform var(--transition);
+        }
+        
+        .btn:hover i {
+            transform: scale(1.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+            box-shadow: none;
+        }
+        
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 13px;
+        }
+        
+        /* Question List Styles */
+        .question-list {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.6s cubic-bezier(.4,0,.2,1);
+        }
+        
+        .question-item {
+            padding: 15px;
+            border-bottom: 1.5px solid var(--border);
+            display: flex;
+            transition: 
+                transform var(--transition),
+                box-shadow var(--transition);
+        }
+        
+        .question-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .question-stats {
+            margin-right: 16px;
+            text-align: center;
+            min-width: 58px;
+        }
+        
+        .question-title a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+            transition: color var(--transition);
+        }
+        
+        .question-title a:hover {
+            color: var(--primary);
+        }
+        
+        .question-excerpt {
+            margin: 8px 0;
+            font-size: 13px;
+            color: var(--text);
+        }
+        
+        .question-meta {
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+        }
+        
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: #e1ecf4;
+            color: #0077cc;
+            padding: 6px 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: 
+                background var(--transition),
+                color var(--transition),
+                transform var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tag:hover {
+            background: #b3e5fc;
+            color: #01579b;
+            transform: translateY(-2px);
+        }
+        
+        /* Forms */
+        .form-container {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s cubic-bezier(.4,0,.2,1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 15px;
+            transition: 
+                border-color var(--transition),
+                box-shadow var(--transition),
+                transform var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(0,119,204,0.10);
+            outline: none;
+            transform: translateY(-1px);
+        }
+        
+        textarea.form-control {
+            min-height: 200px;
+        }
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.4s;
+        }
+        
+        .modal-content {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+            animation: slideUp 0.4s;
+            transform-origin: center;
+        }
+        
+        .modal-content:hover {
+            transform: scale(1.01);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-light);
+            transition: color var(--transition);
+        }
+        
+        .modal-close:hover {
+            color: var(--danger);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                transform: translateY(50px) scale(0.95);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .search-bar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .question-item {
+                flex-direction: column;
+            }
+            
+            .question-stats {
+                display: flex;
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-picture {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .profile-actions {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .form-control {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            
+            .question-item {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-links a span {
+                display: none;
+            }
+            
+            .header-container {
+                padding: 8px;
+            }
+            
+            .logo img {
+                height: 24px;
+            }
+        }
+  /* Footer */
+  footer {
+            background-color: #242729;
+            color: #9fa6ad;
+            padding: 24px 0;
+        }
+        
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .footer-logo {
+            width: 50px;
+        }
+        
+        .footer-links {
+            display: flex;
+        }
+        
+        .footer-column {
+            margin-left: 48px;
+        }
+        
+        .footer-column h5 {
+            margin-bottom: 12px;
+            color: #bbc0c4;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-column ul li a {
+            color: #9fa6ad;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .footer-column ul li a:hover {
+            color: #bbc0c4;
+        }
+        
+        .copyright {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 12px 16px;
+            max-width: 300px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .pricing-plan {
+                width: calc(50% - 10px);
+            }
+            
+            .search-bar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .question-item {
+                flex-direction: column;
+            }
+            
+            .question-stats {
+                display: flex;
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .footer-container {
+                flex-direction: column;
+            }
+            
+            .footer-links {
+                margin-top: 20px;
+                flex-wrap: wrap;
+            }
+            
+            .footer-column {
+                margin-left: 0;
+                width: 50%;
+                margin-bottom: 20px;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-picture {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .profile-actions {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .pricing-plan {
+                width: 100%;
+            }
+            
+            .nav-links a span {
+                display: none;
+            }
+            
+            .header-container {
+                padding: 8px;
+            }
+            
+            .logo img {
+                height: 24px;
+            }
+            
+            .footer-column {
+                width: 100%;
+            }
+        }
+
+       
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="Stack_Overflow_logo.png" alt="StackOverflow Logo" />
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Search...">
+            </div>
+            
+            <div class="nav-links">
+                <a href="social-page-html.html" id="social-link"><i class="fa fa-users"></i> <span>Social</span></a>
+                <a href="google-auth.html" id="login-btn"><i class="fa fa-sign-in"></i> <span>Log In</span></a>
+                <a href="signup.html" id="signup-btn"><i class="fa fa-user-plus"></i> <span>Sign Up</span></a>
+                <a href="profile.html" class="profile-link" id="profile-link">
+                    <img src="premium_photo-1689977968861-9c91dbb16049.jpg" alt="Profile" class="profile-pic" id="nav-profile-pic">
+                    <span>Profile</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Home Page Content -->
+            <div id="home-page" class="page">
+                <div class="page-title">
+                    <h1>Top Questions</h1>
+                    <a href="askquestion.html" class="btn btn-primary" id="ask-question-btn">Ask Question</a>
+                </div>
+                
+                <div class="question-list">
+                    <div class="question-item">
+                        <div class="question-stats">
+                            <div>5 votes</div>
+                            <div>2 answers</div>
+                        </div>
+                        <div class="question-content">
+                            <div class="question-title">
+                                <a href="#">How to implement subscription plans in a web application?</a>
+                            </div>
+                            <div class="question-excerpt">
+                                I'm trying to create subscription plans for my website using Stripe. I need to restrict certain features based on the plan. Any suggestions on the best approach?
+                            </div>
+                            <div class="question-meta">
+                                <div class="tags">
+                                    <a href="#" class="tag">javascript</a>
+                                    <a href="#" class="tag">stripe</a>
+                                    <a href="#" class="tag">subscriptions</a>
+                                </div>
+                                <div>asked 2 hours ago by JohnDoe</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-item">
+                        <div class="question-stats">
+                            <div>12 votes</div>
+                            <div>5 answers</div>
+                        </div>
+                        <div class="question-content">
+                            <div class="question-title">
+                                <a href="#">How to implement Google authentication in a web application?</a>
+                            </div>
+                            <div class="question-excerpt">
+                                I want to add Google authentication to my website. What's the best way to implement this? I'm using vanilla JavaScript for my front-end.
+                            </div>
+                            <div class="question-meta">
+                                <div class="tags">
+                                    <a href="#" class="tag">javascript</a>
+                                    <a href="#" class="tag">authentication</a>
+                                    <a href="#" class="tag">google</a>
+                                </div>
+                                <div>asked 5 hours ago by JaneSmith</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-item">
+                        <div class="question-stats">
+                            <div>8 votes</div>
+                            <div>3 answers</div>
+                        </div>
+                        <div class="question-content">
+                            <div class="question-title">
+                                <a href="#">Best practices for implementing password reset functionality</a>
+                            </div>
+                            <div class="question-excerpt">
+                                I'm building a password reset feature for my application. What are the best practices for implementing this securely?
+                            </div>
+                            <div class="question-meta">
+                                <div class="tags">
+                                    <a href="#" class="tag">security</a>
+                                    <a href="#" class="tag">authentication</a>
+                                    <a href="#" class="tag">password-reset</a>
+                                </div>
+                                <div>asked yesterday by TechGuru</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div>
+                    <img src="Stack_Overflow_logo.png" alt="StackOverflow Logo" class="footer-logo">
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h5>Stack Overflow</h5>
+                        <ul>
+                            <li><a href="#">Questions</a></li>
+                            <li><a href="#">Tags</a></li>
+                            <li><a href="#">Users</a></li>
+                            <li><a href="#">Companies</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h5>Products</h5>
+                        <ul>
+                            <li><a href="#">Teams</a></li>
+                            <li><a href="#">Advertising</a></li>
+                            <li><a href="#">Collectives</a></li>
+                            <li><a href="#">Talent</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h5>Company</h5>
+                        <ul>
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">Press</a></li>
+                            <li><a href="#">Work Here</a></li>
+                            <li><a href="#">Legal</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h5>Stack Exchange Network</h5>
+                        <ul>
+                            <li><a href="#">Technology</a></li>
+                            <li><a href="#">Culture & Recreation</a></li>
+                            <li><a href="#">Science</a></li>
+                            <li><a href="#">Professional</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Stack Overflow. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Payment Modal -->
+    <div class="modal" id="payment-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Complete Your Subscription</h2>
+            <div class="form-group">
+                <label for="card-name">Name on Card</label>
+                <input type="text" id="card-name" class="form-control" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label for="card-number">Card Number</label>
+                <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456">
+            </div>
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label for="card-expiry">Expiration Date</label>
+                    <input type="text" id="card-expiry" class="form-control" placeholder="MM/YY">
+                </div>
+                <div style="flex: 1;">
+                    <label for="card-cvc">CVC</label>
+                    <input type="text" id="card-cvc" class="form-control" placeholder="123">
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="complete-payment-btn" class="btn btn-primary">Complete Payment</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Picture Modal -->
+    <div class="modal" id="avatar-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Change Profile Picture</h2>
+            <div class="form-group">
+                <label for="avatar-upload">Upload Image</label>
+                <input type="file" id="avatar-upload" class="form-control" accept="image/*">
+            </div>
+            <div class="form-group">
+                <div id="avatar-preview-container" style="display: none; text-align: center; margin-top: 10px;">
+                    <img id="avatar-preview" style="max-width: 200px; max-height: 200px; border-radius: 50%;">
+                </div>
+            </div>
+            <div class="form-group">
+                <h3>Or Choose an Avatar</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                    <img src="/api/placeholder/100/100?text=1" alt="Avatar 1" class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+                    <img src="/api/placeholder/100/100?text=2" alt="Avatar 2" class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+                    <img src="/api/placeholder/100/100?text=3" alt="Avatar 3" class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+                    <img src="/api/placeholder/100/100?text=4" alt="Avatar 4" class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+                    <img src="/api/placeholder/100/100?text=5" alt="Avatar 5" class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+                    <img src="/api/placeholder/100/100?text=6" alt="Avatar 6" class="avatar-option" style="width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="save-avatar-btn" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings Modal -->
+    <div class="modal" id="notification-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Notification Settings</h2>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="enable-notifications" checked>
+                    Enable Browser Notifications
+                </label>
+            </div>
+            <div class="form-group">
+                <h3>Notify me when:</h3>
+                <label>
+                    <input type="checkbox" id="notify-answers" checked>
+                    Someone answers my question
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="notify-upvotes" checked>
+                    Someone upvotes my post
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="notify-comments" checked>
+                    Someone comments on my post
+                </label>
+            </div>
+            <div class="form-group">
+                <button id="save-notification-settings" class="btn btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- OTP Verification Modal -->
+    <div class="modal" id="otp-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Verify Your Email</h2>
+            <p>We've sent a verification code to your email. Please enter it below to continue.</p>
+            <div class="form-group">
+                <label for="otp-code">Verification Code</label>
+                <input type="text" id="otp-code" class="form-control" placeholder="Enter 6-digit code">
+            </div>
+            <div class="form-group">
+                <button id="verify-otp-btn" class="btn btn-primary">Verify</button>
+                <button id="resend-otp-btn" class="btn btn-outline">Resend Code</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Random Password Modal -->
+    <div class="modal" id="random-password-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Generated Password</h2>
+            <p>We've generated a random password for you. Please save it somewhere safe.</p>
+            <div class="form-group">
+                <input type="text" id="generated-password" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <button id="copy-password-btn" class="btn btn-outline">Copy to Clipboard</button>
+                <button id="use-password-btn" class="btn btn-primary">Use This Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser Notification -->
+    <div class="notification" id="browser-notification">
+        <div class="notification-title">New Activity</div>
+        <div class="notification-message">Someone answered your question!</div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let currentPlan = 'free';
+        let questionCounter = 0;
+        let postCounter = 0;
+        let userFriends = [];
+        let passwordResetCount = 0;
+        let notificationsEnabled = true;
+        
+        // Utility functions
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+        
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function formatDate(date) {
+            return new Date(date).toLocaleString();
+        }
+        
+        function isLoginTimeAllowed() {
+            const now = new Date();
+            const hours = now.getHours();
+            return hours >= 10 && hours < 11; // 10 AM to 11 AM
+        }
+        
+        function isVideoUploadTimeAllowed() {
+            const now = new Date();
+            const hours = now.getHours();
+            return hours >= 14 && hours < 19; // 2 PM to 7 PM
+        }
+        
+        function generateRandomPassword() {
+            const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+            const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const length = 10;
+            
+            let password = '';
+            
+            // Ensure at least one uppercase and one lowercase letter
+            password += upperCase.charAt(Math.floor(Math.random() * upperCase.length));
+            password += lowerCase.charAt(Math.floor(Math.random() * lowerCase.length));
+            
+            // Fill the rest of the password
+            for (let i = 2; i < length; i++) {
+                const charSet = Math.random() > 0.5 ? upperCase : lowerCase;
+                password += charSet.charAt(Math.floor(Math.random() * charSet.length));
+            }
+            
+            // Shuffle the password
+            return password.split('').sort(() => 0.5 - Math.random()).join('');
+        }
+        
+        function showNotification(title, message) {
+            if (!notificationsEnabled) return;
+            
+            // Browser's Notification API
+            if (Notification.permission === 'granted') {
+                new Notification(title, { body: message });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification(title, { body: message });
+                    }
+                });
+            }
+            
+            // Fallback notification
+            const notification = document.getElementById('browser-notification');
+            notification.querySelector('.notification-title').textContent = title;
+            notification.querySelector('.notification-message').textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        function sendOTP(email) {
+            // Simulate OTP sending
+            const otp = Math.floor(100000 + Math.random() * 900000);
+            console.log(`OTP sent to ${email}: ${otp}`);
+            showModal('otp-modal');
+            return otp;
+        }
+        
+        function isVideoValid(file) {
+            return new Promise((resolve) => {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                
+                video.onloadedmetadata = function() {
+                    window.URL.revokeObjectURL(video.src);
+                    const duration = video.duration;
+                    const sizeInMB = file.size / (1024 * 1024);
+                    resolve({
+                        valid: duration <= 120 && sizeInMB <= 50,
+                        duration: duration,
+                        size: sizeInMB
+                    });
+                };
+                
+                video.src = URL.createObjectURL(file);
+            });
+        }
+        
+        function getMaxPostsPerDay() {
+            if (userFriends.length === 0) return 0;
+            if (userFriends.length === 1) return 1;
+            if (userFriends.length >= 10) return Infinity;
+            return userFriends.length;
+        }
+        
+        function getMaxQuestionsPerDay() {
+            switch (currentPlan) {
+                case 'free': return 1;
+                case 'bronze': return 5;
+                case 'silver': return 10;
+                case 'gold': return Infinity;
+                default: return 1;
+            }
+        }
+        
+        // Initialize Google Maps
+        function initMap(lat, lng) {
+            // This would be implemented with Google Maps API
+            const mapContainer = document.getElementById('map-container');
+            mapContainer.style.display = 'block';
+            
+            const map = document.getElementById('map');
+            map.innerHTML = `<div style="background-color: #e9ecef; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <div style="text-align: center;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 48px; color: #dc3545;"></i>
+                    <p>Map showing location at ${lat}, ${lng}</p>
+                </div>
+            </div>`;
+            
+            // Fetch weather data
+            fetchWeather(lat, lng);
+        }
+        
+        async function fetchWeather(lat, lng) {
+            const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=metric&appid=${apiKey}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch weather data');
+                }
+                const data = await response.json();
+                const condition = data.weather[0].description;
+                const temperature = data.main.temp;
+                
+                const weatherInfo = document.getElementById('weather-info');
+                weatherInfo.innerHTML = `
+                    <div style="background-color: white; padding: 15px; margin-top: 10px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <h3>Current Weather</h3>
+                        <div style="display: flex; align-items: center; margin-top: 10px;">
+                            <div style="font-size: 36px; margin-right: 15px;">
+                                <i class="fas ${condition.includes('sun') ? 'fa-sun' : condition.includes('cloud') ? 'fa-cloud' : condition.includes('rain') ? 'fa-cloud-rain' : 'fa-moon'}"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px;">${temperature}°C</div>
+                                <div>${condition}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                alert('Unable to fetch weather data. Please try again later.');
+            }
+        }
+        
+        // Payment processing
+        function processPayment(plan) {
+            if (!isLoginTimeAllowed()) {
+                alert('Payment processing is only available between 10 AM and 11 AM IST.');
+                return;
+            }
+            
+            if (!currentUser) {
+                alert('Please log in to upgrade your plan.');
+                showPage('login-page');
+                return;
+            }
+            
+            showModal('payment-modal');
+        }
+        
+        function completePayment() {
+            // Simulate payment processing
+            const planName = document.querySelector('.pricing-plan .btn-primary.plan-select').getAttribute('data-plan');
+            const planPrices = {
+                'bronze': '₹100',
+                'silver': '₹300',
+                'gold': '₹1000'
+            };
+            
+            currentPlan = planName;
+            document.getElementById('user-plan').textContent = planName.charAt(0).toUpperCase() + planName.slice(1);
+            
+            // Simulate sending email with invoice
+            console.log(`Email sent to ${currentUser.email} with invoice for ${planName} plan (${planPrices[planName]}/month)`);
+            
+            closeModal('payment-modal');
+            alert(`Thank you for subscribing to the ${planName.charAt(0).toUpperCase() + planName.slice(1)} plan! An invoice has been sent to your email.`);
+        }
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navigation
+            document.getElementById('login-btn').addEventListener('click', () => showPage('login-page'));
+            document.getElementById('signup-btn').addEventListener('click', () => showPage('signup-page'));
+            document.getElementById('login-link').addEventListener('click', () => showPage('login-page'));
+            document.getElementById('signup-link').addEventListener('click', () => showPage('signup-page'));
+            document.getElementById('forgot-password-link').addEventListener('click', () => showPage('forgot-password-page'));
+            document.getElementById('back-to-login').addEventListener('click', () => showPage('login-page'));
+            document.getElementById('ask-question-btn').addEventListener('click', () => {
+                if (!currentUser) {
+                    alert('Please log in to ask a question.');
+                    showPage('login-page');
+                    return;
+                }
+                showPage('ask-question-page');
+            });
+            document.getElementById('profile-link').addEventListener('click', () => showPage('profile-page'));
+            
+            document.querySelector('.logo').addEventListener('click', () => showPage('home-page'));
+            
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.getAttribute('data-tab')}-tab`).classList.add('active');
+                });
+            });
+            
+            // Modals
+            document.querySelectorAll('.modal-close').forEach(close => {
+                close.addEventListener('click', () => {
+                    close.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // Authentication
+            document.getElementById('login-submit').addEventListener('click', () => {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                if (!email || !password) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // Simulate login
+                currentUser = {
+                    name: 'User Name',
+                    email: email,
+                    plan: 'free',
+                    profilePic: '/api/placeholder/200/200'
+                };
+                
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('signup-btn').style.display = 'none';
+                document.getElementById('profile-link').style.display = 'flex';
+                
+                document.getElementById('profile-name').textContent = currentUser.name;
+                document.getElementById('profile-email').textContent = currentUser.email;
+                
+                // Set profile details
+                document.getElementById('settings-name').value = currentUser.name;
+                document.getElementById('settings-email').value = currentUser.email;
+                
+                showPage('home-page');
+                showNotification('Welcome', 'You have successfully logged in!');
+            });
+            
+            document.getElementById('signup-submit').addEventListener('click', () => {
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                
+                if (!name || !email || !password) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // Simulate signup
+                currentUser = {
+                    name: name,
+                    email: email,
+                    plan: 'free',
+                    profilePic: '/api/placeholder/200/200'
+                };
+                
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('signup-btn').style.display = 'none';
+                document.getElementById('profile-link').style.display = 'flex';
+                
+                document.getElementById('profile-name').textContent = currentUser.name;
+                document.getElementById('profile-email').textContent = currentUser.email;
+                
+                // Set profile details
+                document.getElementById('settings-name').value = currentUser.name;
+                document.getElementById('settings-email').value = currentUser.email;
+                
+                showPage('home-page');
+                showNotification('Welcome', 'Your account has been created successfully!');
+            });
+            
+            document.getElementById('google-login-btn').addEventListener('click', () => {
+                // Simulate Google login
+                currentUser = {
+                    name: 'Google User',
+                    email: 'googleuser@gmail.com',
+                    plan: 'free',
+                    profilePic: '/api/placeholder/200/200'
+                };
+                
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('signup-btn').style.display = 'none';
+                document.getElementById('profile-link').style.display = 'flex';
+                
+                document.getElementById('profile-name').textContent = currentUser.name;
+                document.getElementById('profile-email').textContent = currentUser.email;
+                
+                // Set profile details
+                document.getElementById('settings-name').value = currentUser.name;
+                document.getElementById('settings-email').value = currentUser.email;
+                
+                showPage('home-page');
+                showNotification('Welcome', 'You have successfully logged in with Google!');
+            });
+            document.getElementById('forgot-password-submit').addEventListener('click', () => {
+                const email = document.getElementById('forgot-password-email').value;   
+                if (!email) {
+                    alert('Please enter your email');
+                    return;
+                }
+                // Simulate sending OTP
+                const otp = sendOTP(email);
+                document.getElementById('otp-code').value = otp;
+                showModal('otp-modal');
+            });
+            document.getElementById('verify-otp-btn').addEventListener('click', () => {
+                const enteredOtp = document.getElementById('otp-code').value;
+                if (!enteredOtp) {
+                    alert('Please enter the OTP');
+                    return;
+                }
+                // Simulate OTP verification
+                if (enteredOtp === document.getElementById('otp-code').value) {
+                    alert('OTP verified successfully! You can now reset your password.');
+                    showPage('reset-password-page');
+                } else {
+                    alert('Invalid OTP. Please try again.');
+                }
+            });
+
+            document.getElementById('resend-otp-btn').addEventListener('click', () => {
+                const email = document.getElementById('forgot-password-email').value;
+                if (!email) {
+                    alert('Please enter your email');
+                    return;
+                }
+                // Simulate sending OTP
+                const otp = sendOTP(email);
+                document.getElementById('otp-code').value = otp;
+                alert('OTP resent successfully!');
+            });
+            document.getElementById('reset-password-submit').addEventListener('click', () => {
+                const newPassword = document.getElementById('reset-password').value;
+                if (!newPassword) {
+                    alert('Please enter a new password');
+                    return;
+                }
+                // Simulate password reset
+                currentUser.password = newPassword;
+                alert('Password reset successfully! You can now log in with your new password.');
+                showPage('login-page');
+            });
+            document.getElementById('settings-save').addEventListener('click', () => {
+                const name = document.getElementById('settings-name').value;
+                const email = document.getElementById('settings-email').value;
+                const password = document.getElementById('settings-password').value;
+                const notifications = document.getElementById('enable-notifications').checked;
+                const avatar = document.getElementById('avatar-preview').src;
+                const plan = document.getElementById('user-plan').textContent.toLowerCase();
+                const location = document.getElementById('location').value;
+                const bio = document.getElementById('bio').value;
+                const website = document.getElementById('website').value;
+                const socialLinks = {
+                    facebook: document.getElementById('facebook').value,
+                    twitter: document.getElementById('twitter').value,
+                    linkedin: document.getElementById('linkedin').value
+                };
+                const skills = document.getElementById('skills').value.split(',').map(skill => skill.trim());
+                const interests = document.getElementById('interests').value.split(',').map(interest => interest.trim());
+                const locationLat = document.getElementById('location-lat').value;
+                const locationLng = document.getElementById('location-lng').value;
+                const locationName = document.getElementById('location-name').value;
+                const locationDetails = {
+                    lat: locationLat,
+                    lng: locationLng,
+                    name: locationName
+                };
+                const maxPosts = getMaxPostsPerDay();
+                const maxQuestions = getMaxQuestionsPerDay();
+                const maxPostsPerDay = document.getElementById('max-posts-per-day');
+                const maxQuestionsPerDay = document.getElementById('max-questions-per-day');
+                maxPostsPerDay.textContent = `Max Posts per Day: ${maxPosts}`;
+                maxQuestionsPerDay.textContent = `Max Questions per Day: ${maxQuestions}`;
+            
+                // Simulate saving settings
+                currentUser.name = name;
+                currentUser.email = email;
+                currentUser.password = password;
+                currentUser.notifications = notifications;
+                currentUser.avatar = avatar;
+                currentUser.plan = plan;
+                currentUser.location = location;
+                currentUser.bio = bio;
+                currentUser.website = website;
+                currentUser.socialLinks = socialLinks;
+                currentUser.skills = skills;
+                currentUser.interests = interests;
+                currentUser.locationDetails = locationDetails;
+                currentUser.maxPosts = maxPosts;
+                currentUser.maxQuestions = maxQuestions;
+                
+                alert('Settings saved successfully!');
+            });
+            
+            // Add ripple effect to buttons
+            document.querySelectorAll('.btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    this.appendChild(ripple);
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+            
+            // Enhanced form validation
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const inputs = this.querySelectorAll('input[required], textarea[required]');
+                    let isValid = true;
+                    
+                    inputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            input.classList.add('error');
+                            isValid = false;
+                        } else {
+                            input.classList.remove('error');
+                        }
+                    });
+                    
+                    if (isValid) {
+                        // Add success animation
+                        this.classList.add('success');
+                        setTimeout(() => this.classList.remove('success'), 2000);
+                    }
+                });
+            });
+            
+            // Enhanced modal interactions
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Enhanced notification system
+            function showNotification(title, message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+            
+            // Enhanced search functionality
+            const searchInput = document.querySelector('.search-bar input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    document.querySelectorAll('.question-item').forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(value) ? 'block' : 'none';
+                    });
+                });
+            }
+
+            // Post Interactions
+            document.querySelectorAll('.post-action').forEach(action => {
+                // Like button functionality
+                if (action.innerHTML.includes('fa-thumbs-up')) {
+                    action.addEventListener('click', function() {
+                        const likeCount = this.querySelector('span') || document.createElement('span');
+                        let count = parseInt(likeCount.textContent.match(/\d+/)?.[0] || '0');
+                        
+                        if (this.classList.contains('liked')) {
+                            count--;
+                            this.classList.remove('liked');
+                            this.innerHTML = `<i class="fa fa-thumbs-up"></i> Like (${count})`;
+                        } else {
+                            count++;
+                            this.classList.add('liked');
+                            this.innerHTML = `<i class="fa fa-thumbs-up"></i> Like (${count})`;
+                        }
+                        
+                        // Add animation
+                        this.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 200);
+                    });
+                }
+                
+                // Comment button functionality
+                if (action.innerHTML.includes('fa-comment')) {
+                    action.addEventListener('click', function() {
+                        const post = this.closest('.post');
+                        const commentSection = post.querySelector('.comment-section') || createCommentSection(post);
+                        
+                        if (commentSection.style.display === 'none') {
+                            commentSection.style.display = 'block';
+                            commentSection.style.animation = 'slideDown 0.3s ease-out';
+                        } else {
+                            commentSection.style.animation = 'slideUp 0.3s ease-out';
+                            setTimeout(() => {
+                                commentSection.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                }
+                
+                // Share button functionality
+                if (action.innerHTML.includes('fa-share')) {
+                    action.addEventListener('click', function() {
+                        const post = this.closest('.post');
+                        const postContent = post.querySelector('.post-content').textContent;
+                        const shareUrl = window.location.href;
+                        
+                        // Create share modal
+                        const shareModal = document.createElement('div');
+                        shareModal.className = 'modal';
+                        shareModal.innerHTML = `
+                            <div class="modal-content">
+                                <span class="modal-close">&times;</span>
+                                <h2>Share Post</h2>
+                                <div class="share-options">
+                                    <button class="btn btn-outline" onclick="shareOnTwitter('${postContent}', '${shareUrl}')">
+                                        <i class="fab fa-twitter"></i> Twitter
+                                    </button>
+                                    <button class="btn btn-outline" onclick="shareOnFacebook('${postContent}', '${shareUrl}')">
+                                        <i class="fab fa-facebook"></i> Facebook
+                                    </button>
+                                    <button class="btn btn-outline" onclick="shareOnLinkedIn('${postContent}', '${shareUrl}')">
+                                        <i class="fab fa-linkedin"></i> LinkedIn
+                                    </button>
+                                    <button class="btn btn-outline" onclick="copyToClipboard('${shareUrl}')">
+                                        <i class="fa fa-copy"></i> Copy Link
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.body.appendChild(shareModal);
+                        shareModal.style.display = 'flex';
+                        
+                        // Close modal when clicking outside or on close button
+                        shareModal.querySelector('.modal-close').addEventListener('click', () => {
+                            shareModal.remove();
+                        });
+                        
+                        shareModal.addEventListener('click', (e) => {
+                            if (e.target === shareModal) {
+                                shareModal.remove();
+                            }
+                        });
+                    });
+                }
+            });
+            
+            // Function to create comment section
+            function createCommentSection(post) {
+                const commentSection = document.createElement('div');
+                commentSection.className = 'comment-section';
+                commentSection.style.display = 'none';
+                
+                commentSection.innerHTML = `
+                    <div class="comment-form">
+                        <textarea class="form-control" placeholder="Write a comment..."></textarea>
+                        <button class="btn btn-primary btn-sm">Post Comment</button>
+                    </div>
+                    <div class="comments-list"></div>
+                `;
+                
+                post.appendChild(commentSection);
+                return commentSection;
+            }
+            
+            // Share functions
+            function shareOnTwitter(text, url) {
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                window.open(twitterUrl, '_blank');
+            }
+            
+            function shareOnFacebook(text, url) {
+                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+                window.open(facebookUrl, '_blank');
+            }
+            
+            function shareOnLinkedIn(text, url) {
+                const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                window.open(linkedinUrl, '_blank');
+            }
+            
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Success', 'Link copied to clipboard!', 'success');
+                }).catch(() => {
+                    showNotification('Error', 'Failed to copy link', 'error');
+                });
+            }
+        });
+
+        // Add new styles for comments and sharing
+        const style = document.createElement('style');
+        style.textContent = `
+            .comment-section {
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid var(--border);
+            }
+            
+            .comment-form {
+                margin-bottom: 15px;
+            }
+            
+            .comment-form textarea {
+                margin-bottom: 10px;
+                min-height: 80px;
+            }
+            
+            .comments-list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .comment {
+                background: var(--background);
+                padding: 10px;
+                border-radius: var(--radius);
+            }
+            
+            .comment-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 5px;
+            }
+            
+            .comment-author {
+                font-weight: 600;
+                color: var(--text);
+            }
+            
+            .comment-time {
+                color: var(--text-light);
+                font-size: 12px;
+            }
+            
+            .share-options {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .share-options .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            @keyframes slideDown {
+                from {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+            }
+            
+            .liked {
+                color: var(--primary);
+            }
+            
+            .liked i {
+                color: var(--primary);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

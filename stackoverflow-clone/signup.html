@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Signup Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      /* Variables */
+      :root {
+        --primary: #0a95ff;
+        --primary-dark: #0074cc;
+        --primary-light: #e1ecf4;
+        --secondary: #2e2e2e;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --border: #d6d9dc;
+        --text: #232629;
+        --text-light: #6a737c;
+        --background: #f8f9f9;
+        --surface: #ffffff;
+        --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        --radius: 8px;
+        --transition: 0.3s cubic-bezier(.4,0,.2,1);
+      }
+
+      /* Reset and base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, var(--background) 0%, #e1e5ea 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: var(--text);
+        padding: 20px;
+      }
+
+      /* Typography */
+      h2 {
+        margin-bottom: 24px;
+        color: var(--secondary);
+        font-size: 28px;
+        font-weight: 600;
+        text-align: center;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: 3px;
+      }
+
+      a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color var(--transition);
+      }
+
+      a:hover {
+        color: var(--primary-dark);
+      }
+
+      /* Forms */
+      .form-container {
+        background-color: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px;
+        margin: 0 auto;
+        max-width: 400px;
+        width: 100%;
+        animation: fadeInUp 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--secondary);
+        transition: color var(--transition);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 15px;
+        transition: all var(--transition);
+        background-color: var(--surface);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(10, 149, 255, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .form-control::placeholder {
+        color: var(--text-light);
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 15px;
+        border: none;
+        transition: all var(--transition);
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(10, 149, 255, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(10, 149, 255, 0.4);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-outline {
+        background-color: var(--surface);
+        color: var(--text);
+        border: 2px solid var(--border);
+        margin-right: 8px;
+        margin-top: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--background);
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
+      }
+
+      .btn-outline i {
+        font-size: 16px;
+      }
+
+      /* Social buttons container */
+      .social-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Form validation styles */
+      .form-control.error {
+        border-color: var(--danger);
+        animation: shake 0.5s;
+      }
+
+      .form-control.success {
+        border-color: var(--success);
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .form-container {
+          padding: 24px;
+        }
+        
+        .btn {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+        
+        h2 {
+          font-size: 24px;
+        }
+      }
+
+      /* Loading state */
+      .btn.loading {
+        pointer-events: none;
+        opacity: 0.8;
+      }
+
+      .btn.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+</head>
+<body>
+    <div id="signup-page" class="page">
+        <div class="form-container">
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Display Name</label>
+                    <input type="text" id="signup-name" class="form-control" placeholder="Enter your display name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="signup-submit" class="btn btn-primary">Sign Up</button>
+                </div>
+            </form>
+            <div class="form-group">
+                <p>Or sign up with:</p>
+                <button id="google-signup-btn" class="btn btn-outline">
+                    <i class="fab fa-google"></i> Google
+                </button>
+                <button id="phone-signup-btn" class="btn btn-outline">
+                    <i class="fas fa-phone"></i> Phone
+                </button>
+            </div>
+            <div class="form-group">
+                <p>Already have an account? <a href="google-auth.html">Log In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            // Simple validation
+            if (!name || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Here you would typically send the data to your server
+            console.log('Sign up form submitted', { name, email, password });
+            alert('Sign up successful! (Demo purposes only)');
+        });
+
+        document.getElementById('google-signup-btn').addEventListener('click', function() {
+            alert('Google sign up would be implemented here');
+        });
+
+        document.getElementById('phone-signup-btn').addEventListener('click', function() {
+            alert('Phone sign up would be implemented here');
+        });
+
+        document.getElementById('login-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            alert('Login page would be shown here');
+        });
+    </script>
+</body>
+</html>

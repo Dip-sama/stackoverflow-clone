@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Forgot Password</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      /* Variables */
+      :root {
+        --primary: #0a95ff;
+        --primary-hover: #0074cc;
+        --border: #d6d9dc;
+        --text: #232629;
+        --background: #f8f9f9;
+      }
+
+      /* Reset and base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background-color: var(--background);
+        line-height: 1.5;
+        padding: 60px;
+      }
+
+      /* Typography */
+      h2 {
+        margin-bottom: 20px;
+        color: var(--text);
+      }
+
+      a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Forms */
+      .form-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
+        padding: 24px;
+        margin: 0 auto;
+        max-width: 400px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        font-size: 14px;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(10, 149, 255, 0.2);
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 10px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+        transition: background-color 0.2s;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        width: 100%;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-outline {
+        background-color: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+        margin-right: 8px;
+        margin-top: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-outline:hover {
+        background-color: var(--background);
+      }
+
+      .btn-outline i {
+        margin-right: 8px;
+      }
+
+      /* Hide elements initially */
+      .hidden {
+        display: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .form-container {
+          padding: 16px;
+        }
+      }
+    </style>
+</head>
+<body>
+    <div id="forgot-password-page" class="page">
+        <div class="form-container">
+            <h2>Reset Password</h2>
+            <form id="reset-form">
+                <div class="form-group">
+                    <label for="reset-method">Reset Method</label>
+                    <select id="reset-method" class="form-control" required>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone Number</option>
+                    </select>
+                </div>
+                <div class="form-group" id="email-reset-group">
+                    <label for="reset-email">Email</label>
+                    <input type="email" id="reset-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group hidden" id="phone-reset-group">
+                    <label for="reset-phone">Phone Number</label>
+                    <input type="tel" id="reset-phone" class="form-control" placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="reset-submit" class="btn btn-primary">Send Reset Link</button>
+                </div>
+            </form>
+            <div class="form-group">
+                <p><a href="#" id="generate-password-btn">Generate a random password instead?</a></p>
+            </div>
+            <div class="form-group">
+                <p>Remember your password? <a href="google-auth.html">Back to Log In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between email and phone reset methods
+        document.getElementById('reset-method').addEventListener('change', function() {
+            const method = this.value;
+            const emailGroup = document.getElementById('email-reset-group');
+            const phoneGroup = document.getElementById('phone-reset-group');
+            const emailInput = document.getElementById('reset-email');
+            const phoneInput = document.getElementById('reset-phone');
+            
+            if (method === 'email') {
+                emailGroup.classList.remove('hidden');
+                phoneGroup.classList.add('hidden');
+                emailInput.setAttribute('required', '');
+                phoneInput.removeAttribute('required');
+                document.getElementById('reset-submit').textContent = 'Send Reset Link';
+            } else {
+                emailGroup.classList.add('hidden');
+                phoneGroup.classList.remove('hidden');
+                phoneInput.setAttribute('required', '');
+                emailInput.removeAttribute('required');
+                document.getElementById('reset-submit').textContent = 'Send Reset Code';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('reset-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const method = document.getElementById('reset-method').value;
+            let contactInfo;
+            
+            if (method === 'email') {
+                contactInfo = document.getElementById('reset-email').value;
+                if (!contactInfo) {
+                    alert('Please enter your email address');
+                    return;
+                }
+            } else {
+                contactInfo = document.getElementById('reset-phone').value;
+                if (!contactInfo) {
+                    alert('Please enter your phone number');
+                    return;
+                }
+            }
+            
+            // Here you would typically send the reset request to your server
+            console.log('Password reset requested for', { method, contactInfo });
+            alert(`Password reset instructions sent to your ${method === 'email' ? 'email address' : 'phone number'}`);
+        });
+
+        // Generate random password
+        document.getElementById('generate-password-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            const method = document.getElementById('reset-method').value;
+            let contactInfo;
+            
+            if (method === 'email') {
+                contactInfo = document.getElementById('reset-email').value;
+                if (!contactInfo) {
+                    alert('Please enter your email address first');
+                    return;
+                }
+            } else {
+                contactInfo = document.getElementById('reset-phone').value;
+                if (!contactInfo) {
+                    alert('Please enter your phone number first');
+                    return;
+                }
+            }
+            
+            // Generate a random password (for demo purposes)
+            const randomPassword = Math.random().toString(36).slice(-10);
+            console.log('Generated random password:', randomPassword);
+            alert(`A temporary password has been generated and sent to your ${method === 'email' ? 'email address' : 'phone number'}`);
+        });
+
+        // Back to login
+        document.getElementById('back-to-login').addEventListener('click', function(event) {
+            event.preventDefault();
+            alert('Redirecting to login page');
+            // In a real implementation, you would redirect to the login page
+            // window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

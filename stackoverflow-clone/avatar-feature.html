@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - StackOverflow Clone</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(59, 64, 69, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .avatar-container {
+            position: relative;
+            width: 128px;
+            height: 128px;
+            margin-right: 24px;
+        }
+        
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #e4e6e8;
+        }
+        
+        .avatar-change {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .profile-info h1 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+        }
+        
+        .profile-info p {
+            color: #6a737c;
+            margin: 0;
+        }
+        
+        .avatar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .avatar-modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .avatar-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .avatar-option {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .avatar-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-option.selected {
+            border-color: #0a95ff;
+        }
+        
+        .custom-avatar-upload {
+            margin-top: 16px;
+            border-top: 1px solid #e4e6e8;
+            padding-top: 16px;
+        }
+        
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+        }
+        
+        .file-upload-label {
+            background-color: #e1ecf4;
+            color: #39739d;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+        
+        #file-name {
+            color: #6a737c;
+            font-size: 14px;
+        }
+        
+        #avatar-file-input {
+            display: none;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        
+        .modal-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .cancel-button {
+            background-color: #f8f9f9;
+            border: 1px solid #e4e6e8;
+            color: #6a737c;
+            margin-right: 12px;
+        }
+        
+        .save-button {
+            background-color: #0a95ff;
+            color: white;
+            border: none;
+        }
+        
+        .save-button:hover {
+            background-color: #0077cc;
+        }
+        
+        /* Preview container for uploaded image */
+        .preview-container {
+            width: 128px;
+            height: 128px;
+            margin: 16px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        #image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .avatar-container {
+                margin-right: 0;
+                margin-bottom: 16px;
+            }
+            
+            .avatar-options {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .avatar-options {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-section">
+        <div class="profile-header">
+            <div class="avatar-container">
+                <img src="/api/placeholder/128/128" alt="Profile avatar" class="avatar" id="current-avatar">
+                <div class="avatar-change" id="change-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </div>
+            </div>
+            <div class="profile-info">
+                <h1>John Doe</h1>
+                <p>Member since April 2025</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Avatar Modal -->
+    <div class="avatar-modal" id="avatar-modal">
+        <div class="avatar-modal-content">
+            <h2>Change Avatar</h2>
+            
+            <h3>Choose from predefined avatars</h3>
+            <div class="avatar-options">
+                <!-- Predefined avatars -->
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=A">
+                    <img src="/api/placeholder/64/64?text=A" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=B">
+                    <img src="/api/placeholder/64/64?text=B" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=C">
+                    <img src="/api/placeholder/64/64?text=C" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=D">
+                    <img src="/api/placeholder/64/64?text=D" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=E">
+                    <img src="/api/placeholder/64/64?text=E" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=F">
+                    <img src="/api/placeholder/64/64?text=F" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=G">
+                    <img src="/api/placeholder/64/64?text=G" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=H">
+                    <img src="/api/placeholder/64/64?text=H" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=I">
+                    <img src="/api/placeholder/64/64?text=I" alt="Avatar option">
+                </div>
+                <div class="avatar-option" data-avatar="/api/placeholder/64/64?text=J">
+                    <img src="/api/placeholder/64/64?text=J" alt="Avatar option">
+                </div>
+            </div>
+            
+            <div class="custom-avatar-upload">
+                <h3>Upload your own avatar</h3>
+                <div class="file-upload-container">
+                    <label for="avatar-file-input" class="file-upload-label">Choose file</label>
+                    <span id="file-name">No file chosen</span>
+                    <input type="file" id="avatar-file-input" accept="image/*">
+                </div>
+                
+                <div class="preview-container" id="preview-container">
+                    <img id="image-preview">
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-button cancel-button" id="close-avatar-modal">Cancel</button>
+                <button class="modal-button save-button" id="save-avatar">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const changeAvatarBtn = document.getElementById('change-avatar');
+            const avatarModal = document.getElementById('avatar-modal');
+            const closeModalBtn = document.getElementById('close-avatar-modal');
+            const saveAvatarBtn = document.getElementById('save-avatar');
+            const avatarOptions = document.querySelectorAll('.avatar-option');
+            const fileInput = document.getElementById('avatar-file-input');
+            const fileNameDisplay = document.getElementById('file-name');
+            const imagePreview = document.getElementById('image-preview');
+            const previewContainer = document.getElementById('preview-container');
+            const currentAvatar = document.getElementById('current-avatar');
+            
+            let selectedAvatar = null;
+            
+            // Open modal
+            changeAvatarBtn.addEventListener('click', function() {
+                avatarModal.style.display = 'flex';
+            });
+            
+            // Close modal
+            closeModalBtn.addEventListener('click', function() {
+                avatarModal.style.display = 'none';
+            });
+            
+            // Close when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === avatarModal) {
+                    avatarModal.style.display = 'none';
+                }
+            });
+            
+            // Select predefined avatar
+            avatarOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    avatarOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store selected avatar URL
+                    selectedAvatar = this.getAttribute('data-avatar');
+                    
+                    // Reset file input
+                    fileInput.value = '';
+                    fileNameDisplay.textContent = 'No file chosen';
+                    previewContainer.style.display = 'none';
+                });
+            });
+            
+            // Handle file input change
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    // Update file name display
+                    fileNameDisplay.textContent = this.files[0].name;
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                        
+                        // Deselect any predefined avatar
+                        avatarOptions.forEach(opt => opt.classList.remove('selected'));
+                        selectedAvatar = null;
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Save avatar changes
+            saveAvatarBtn.addEventListener('click', function() {
+                if (selectedAvatar) {
+                    // Use selected predefined avatar
+                    currentAvatar.src = selectedAvatar;
+                } else if (fileInput.files && fileInput.files[0]) {
+                    // Use uploaded image
+                    currentAvatar.src = imagePreview.src;
+                }
+                
+                // Close modal
+                avatarModal.style.display = 'none';
+                
+                // In a real app, you would send the avatar to your server here
+                console.log('Avatar updated');
+            });
+        });
+
+        document.getElementById('login-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('login-page');
+        });
+        document.getElementById('signup-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('signup-page');
+        });
+        document.getElementById('profile-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('profile-page');
+        });
+    </script>
+</body>
+</html>

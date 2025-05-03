@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <style>
+      /* Variables */
+      :root {
+        --primary: #ff9800;
+        --primary-dark: #f44336;
+        --secondary: #0077cc;
+        --background: #f8f9fa;
+        --surface: #fff;
+        --text: #232629;
+        --text-light: #6a737c;
+        --border: #e4e6e8;
+        --success: #43a047;
+        --danger: #e53935;
+        --shadow: 0 2px 8px rgba(44,62,80,0.08);
+        --radius: 10px;
+        --transition: 0.3s cubic-bezier(.4,0,.2,1);
+      }
+
+      /* Reset and base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      }
+
+      body {
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+        transition: background var(--transition), color var(--transition);
+      }
+
+      /* Typography */
+      h2 {
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+
+      h3 {
+        margin-bottom: 16px;
+        color: var(--text);
+        font-size: 20px;
+      }
+
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+        transition: color var(--transition), text-decoration var(--transition);
+      }
+
+      a:hover, a:focus {
+        color: var(--primary);
+        text-decoration: underline;
+        outline: none;
+      }
+
+      /* Profile layout */
+      .profile-header {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 24px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .profile-picture {
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--border);
+      }
+
+      .profile-info {
+        flex: 1;
+      }
+
+      .profile-info p {
+        margin-bottom: 8px;
+        color: #6a737c;
+      }
+
+      .profile-info p span {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .profile-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      /* Map container */
+      #map-container {
+        margin-bottom: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
+        overflow: hidden;
+        display: none;
+      }
+
+      #map {
+        height: 300px;
+        width: 100%;
+      }
+
+      #weather-info {
+        padding: 15px;
+        font-size: 14px;
+        border-top: 1px solid var(--border);
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 20px;
+      }
+
+      .tab {
+        padding: 12px 20px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+        color: var(--text-light);
+        transition: color var(--transition), border-color var(--transition);
+      }
+
+      .tab.active {
+        color: var(--primary-dark);
+        border-bottom: 3px solid var(--primary-dark);
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #fff;
+        border-radius: 10px 10px 0 0;
+      }
+
+      .tab-content {
+        display: none;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Question list */
+      .question-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .question-item {
+        display: flex;
+        border-bottom: 1.5px solid var(--border);
+        padding-bottom: 18px;
+        transition: box-shadow var(--transition), background var(--transition);
+      }
+
+      .question-item:last-child {
+        border-bottom: none;
+      }
+
+      .question-item:hover {
+        background: #fff3e0;
+        box-shadow: 0 4px 16px rgba(255,152,0,0.10);
+      }
+
+      .question-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-right: 16px;
+        min-width: 80px;
+        text-align: right;
+        font-size: 13px;
+        color: #6a737c;
+      }
+
+      .question-stats div:first-child {
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      .question-stats div:nth-child(2) {
+        color: var(--success);
+      }
+
+      .question-content {
+        flex: 1;
+      }
+
+      .question-title {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .question-title a {
+        color: var(--primary);
+      }
+
+      .question-excerpt {
+        font-size: 14px;
+        color: #6a737c;
+        margin-bottom: 8px;
+      }
+
+      .question-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #6a737c;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .tag {
+        background: #e1ecf4;
+        color: #0077cc;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 13px;
+        margin-right: 6px;
+        margin-bottom: 4px;
+        display: inline-block;
+        transition: background var(--transition), color var(--transition);
+      }
+
+      .tag:hover {
+        background: #b3e5fc;
+        color: #01579b;
+      }
+
+      /* Forms */
+      .form-container {
+        max-width: 600px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        font-size: 14px;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(10, 149, 255, 0.2);
+      }
+
+      /* Buttons */
+      .btn, button, input[type="submit"] {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        border-radius: var(--radius);
+        padding: 10px 22px;
+        font-size: 15px;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        text-decoration: none;
+        transition: 
+          background var(--transition),
+          box-shadow var(--transition),
+          transform var(--transition),
+          color var(--transition);
+        outline: none;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--primary-dark);
+        border: 2px solid var(--primary-dark);
+        box-shadow: none;
+      }
+
+      .btn:hover, .btn:focus, button:hover, button:focus, input[type="submit"]:hover, input[type="submit"]:focus {
+        background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(244,67,54,0.18);
+        transform: translateY(-2px) scale(1.03);
+      }
+
+      .btn-outline:hover, .btn-outline:focus {
+        background: var(--primary-dark);
+        color: #fff;
+        border-color: var(--primary-dark);
+      }
+
+      /* File upload dialog */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(44,62,80,0.25);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        animation: fadeInUp 0.4s;
+      }
+
+      .modal-content {
+        max-width: 500px;
+        width: 90vw;
+        border-radius: var(--radius);
+        box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+        padding: 32px;
+        background: var(--surface);
+        position: relative;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .modal-header h3 {
+        margin: 0;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 18px; right: 18px;
+        font-size: 22px;
+        color: var(--text-light);
+        cursor: pointer;
+        background: none;
+        border: none;
+        transition: color var(--transition);
+      }
+
+      .close-modal:hover {
+        color: var(--danger);
+      }
+
+      /* Notifications Modal */
+      .notification-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .notification-item:last-child {
+        border-bottom: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .header-container, .container {
+          padding: 0 12px;
+        }
+        .profile-header, .profile-section {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+      }
+      @media (max-width: 600px) {
+        .container, .profile-section, .form-container, .question-list, .post, .modal-content, .tab-content {
+          padding: 12px;
+        }
+        .tabs {
+          flex-direction: column;
+        }
+        .tab {
+          width: 100%;
+          text-align: left;
+        }
+      }
+
+      #upgrade-plan-btn a {
+        text-decoration: none !important;
+        color: inherit;
+      }
+
+      #upgrade-plan-btn a:hover {
+        text-decoration: none !important;
+      }
+
+      /* Upgrade Plan Button - Improved UI */
+      .btn-upgrade {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, #ff9800 0%, #f44336 100%);
+        color: #fff !important;
+        font-weight: 600;
+        border: none;
+        border-radius: 24px;
+        padding: 10px 22px;
+        font-size: 15px;
+        box-shadow: 0 2px 8px rgba(244,67,54,0.10);
+        text-decoration: none !important;
+        transition: 
+            background 0.3s cubic-bezier(.4,0,.2,1),
+            box-shadow 0.3s cubic-bezier(.4,0,.2,1),
+            transform 0.2s cubic-bezier(.4,0,.2,1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-upgrade i {
+        font-size: 18px;
+        transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+      }
+
+      .btn-upgrade:hover, .btn-upgrade:focus {
+        background: linear-gradient(90deg, #f44336 0%, #ff9800 100%);
+        color: #fff !important;
+        box-shadow: 0 4px 16px rgba(244,67,54,0.18);
+        text-decoration: none !important;
+        transform: translateY(-2px) scale(1.03);
+        outline: none;
+      }
+
+      .btn-upgrade:hover i, .btn-upgrade:focus i {
+        transform: translateY(-2px) scale(1.15) rotate(-10deg);
+      }
+
+      .btn-upgrade:active {
+        background: linear-gradient(90deg, #ff9800 0%, #f44336 100%);
+        box-shadow: 0 1px 4px rgba(244,67,54,0.10);
+        transform: scale(0.98);
+      }
+    </style>
+</head>
+<body>
+    <div id="profile-page" class="page">
+        <div class="profile-header">
+            <img src="premium_photo-1689977968861-9c91dbb16049.jpg" alt="Profile Picture" class="profile-picture" id="profile-picture">
+            <div class="profile-info">
+                <h2 id="profile-name">User Name</h2>
+                <p id="profile-email">user@example.com</p>
+                <p id="profile-location">Location: <span id="user-location">Not available</span></p>
+                <p id="profile-plan">Current Plan: <span id="user-plan">Free</span></p>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-outline btn-sm" id="change-avatar-btn">
+                    <i class="fas fa-camera"></i> Change Avatar
+                </button>
+                <button class="btn btn-outline btn-sm" id="obtain-location-btn">
+                    <i class="fas fa-map-marker-alt"></i> Obtain Location
+                </button>
+                <button class="btn btn-outline btn-sm" id="manage-notifications-btn">
+                    <i class="fas fa-bell"></i> Manage Notifications
+                </button>
+                <a href="Subscription.html" class="btn btn-upgrade" id="upgrade-plan-btn">
+                    <i class="fas fa-arrow-up"></i> Upgrade Plan
+                </a>
+            </div>
+        </div>
+        
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="weather-info"></div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="questions">Questions</div>
+            <div class="tab" data-tab="answers">Answers</div>
+            <div class="tab" data-tab="settings">Settings</div>
+        </div>
+        
+        <div class="tab-content active" id="questions-tab">
+            <h3>Your Questions</h3>
+            <div class="question-list">
+                <div class="question-item">
+                    <div class="question-stats">
+                        <div>3 votes</div>
+                        <div>1 answer</div>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-title">
+                            <a href="#">How to implement OAuth in Node.js?</a>
+                        </div>
+                        <div class="question-meta">
+                            <div class="tags">
+                                <a href="#" class="tag">node.js</a>
+                                <a href="#" class="tag">oauth</a>
+                                <a href="#" class="tag">authentication</a>
+                            </div>
+                            <div>asked 3 days ago</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Added an additional question for the demo -->
+                <div class="question-item">
+                    <div class="question-stats">
+                        <div>5 votes</div>
+                        <div>2 answers</div>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-title">
+                            <a href="#">What's the best way to handle state in React?</a>
+                        </div>
+                        <div class="question-meta">
+                            <div class="tags">
+                                <a href="#" class="tag">reactjs</a>
+                                <a href="#" class="tag">javascript</a>
+                                <a href="#" class="tag">state-management</a>
+                            </div>
+                            <div>asked 1 week ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="answers-tab">
+            <h3>Your Answers</h3>
+            <div class="question-list">
+                <div class="question-item">
+                    <div class="question-stats">
+                        <div>7 votes</div>
+                        <div>Accepted</div>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-title">
+                            <a href="#">Best practices for password security in web applications</a>
+                        </div>
+                        <div class="question-excerpt">
+                            Your answer: "Always store passwords using strong hashing algorithms like bcrypt or Argon2. Never store plain text passwords..."
+                        </div>
+                        <div class="question-meta">
+                            <div>answered 1 week ago</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Added an additional answer for the demo -->
+                <div class="question-item">
+                    <div class="question-stats">
+                        <div>4 votes</div>
+                        <div></div>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-title">
+                            <a href="#">How to optimize Docker container size?</a>
+                        </div>
+                        <div class="question-excerpt">
+                            Your answer: "Use multi-stage builds to keep your final image small. Start with a base image for building, then copy only necessary files to a minimal runtime image..."
+                        </div>
+                        <div class="question-meta">
+                            <div>answered 3 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="settings-tab">
+            <h3>Account Settings</h3>
+            <div class="form-container">
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label for="settings-name">Display Name</label>
+                        <input type="text" id="settings-name" class="form-control" value="User Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-email">Email</label>
+                        <input type="email" id="settings-email" class="form-control" value="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-password">Change Password</label>
+                        <input type="password" id="settings-password" class="form-control" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-confirm-password">Confirm Password</label>
+                        <input type="password" id="settings-confirm-password" class="form-control" placeholder="Confirm new password">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" id="save-settings-btn" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Avatar Upload Modal -->
+    <div class="modal" id="avatar-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Profile Picture</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="avatar-upload">Select Image</label>
+                <input type="file" id="avatar-upload" class="form-control" accept="image/*">
+            </div>
+            <div id="avatar-preview" style="margin: 15px 0; text-align: center; display: none;">
+                <img id="preview-image" style="max-width: 100%; max-height: 200px; border-radius: 50%;">
+            </div>
+            <div class="form-group">
+                <button id="upload-avatar-btn" class="btn btn-primary">Upload</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings Modal -->
+    <div class="modal" id="notifications-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notification Settings</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div>
+                <div class="notification-item">
+                    <div>Email notifications</div>
+                    <label class="switch">
+                        <input type="checkbox" id="email-notifications" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div>New answer notifications</div>
+                    <label class="switch">
+                        <input type="checkbox" id="answer-notifications" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div>Comment notifications</div>
+                    <label class="switch">
+                        <input type="checkbox" id="comment-notifications" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div>Product updates</div>
+                    <label class="switch">
+                        <input type="checkbox" id="update-notifications">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 16px;">
+                <button id="save-notifications-btn" class="btn btn-primary">Save Preferences</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS for map -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show active content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `${tabName}-tab`) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // Avatar upload
+        const changeAvatarBtn = document.getElementById('change-avatar-btn');
+        const avatarModal = document.getElementById('avatar-modal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        const avatarUpload = document.getElementById('avatar-upload');
+        const previewContainer = document.getElementById('avatar-preview');
+        const previewImage = document.getElementById('preview-image');
+        const uploadAvatarBtn = document.getElementById('upload-avatar-btn');
+        const profilePicture = document.getElementById('profile-picture');
+        
+        changeAvatarBtn.addEventListener('click', function() {
+            avatarModal.style.display = 'flex';
+        });
+        
+        avatarUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        uploadAvatarBtn.addEventListener('click', function() {
+            if (previewImage.src) {
+                profilePicture.src = previewImage.src;
+                avatarModal.style.display = 'none';
+                previewContainer.style.display = 'none';
+                avatarUpload.value = '';
+                alert('Profile picture updated successfully!');
+            } else {
+                alert('Please select an image first');
+            }
+        });
+        
+        // Notifications modal
+        const manageNotificationsBtn = document.getElementById('manage-notifications-btn');
+        const notificationsModal = document.getElementById('notifications-modal');
+        const saveNotificationsBtn = document.getElementById('save-notifications-btn');
+        
+        manageNotificationsBtn.addEventListener('click', function() {
+            notificationsModal.style.display = 'flex';
+        });
+        
+        saveNotificationsBtn.addEventListener('click', function() {
+            notificationsModal.style.display = 'none';
+            alert('Notification preferences saved successfully!');
+        });
+        
+        // Close modals
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                modal.style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+        
+        // Location and map
+        const obtainLocationBtn = document.getElementById('obtain-location-btn');
+        const mapContainer = document.getElementById('map-container');
+        const userLocationSpan = document.getElementById('user-location');
+        const weatherInfo = document.getElementById('weather-info');
+        let map;
+        
+        obtainLocationBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const { latitude, longitude } = position.coords;
+                        
+                        // Update location display
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const city = data.address.city || data.address.town || data.address.village;
+                                const state = data.address.state;
+                                const country = data.address.country;
+                                const locationStr = `${city}, ${state ? state + ', ' : ''}${country}`;
+                                userLocationSpan.textContent = locationStr;
+                            })
+                            .catch(error => {
+                                console.error('Error fetching location info:', error);
+                                userLocationSpan.textContent = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                            });
+                        
+                        // Show map
+                        mapContainer.style.display = 'block';
+                        
+                        // Initialize map if not already done
+                        if (!map) {
+                            map = L.map('map').setView([latitude, longitude], 13);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            }).addTo(map);
+                        } else {
+                            map.setView([latitude, longitude], 13);
+                        }
+                        
+                        // Add marker
+                        L.marker([latitude, longitude]).addTo(map)
+                            .bindPopup('Your current location')
+                            .openPopup();
+                        
+                        // Mock weather info (would use actual API in production)
+                        const weatherConditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Rainy', 'Stormy'];
+                        const temp = Math.floor(Math.random() * 30) + 10; // Random temp between 10-40°C
+                        const condition = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+                        
+                        weatherInfo.innerHTML = `
+                            <strong>Current Weather:</strong> ${condition}, ${temp}°C
+                            <br>
+                            <strong>Humidity:</strong> ${Math.floor(Math.random() * 50) + 30}%
+                            <br>
+                            <strong>Wind:</strong> ${Math.floor(Math.random() * 30) + 5} km/h
+                        `;
+                    },
+                    function(error) {
+                        console.error('Error getting location:', error);
+                        alert('Unable to get your location. Please check your browser permissions.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser');
+            }
+        });
+        
+        // Settings form
+        const settingsForm = document.getElementById('settings-form');
+        const settingsName = document.getElementById('settings-name');
+        const settingsEmail = document.getElementById('settings-email');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        
+        settingsForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('settings-password').value;
+            const confirmPassword = document.getElementById('settings-confirm-password').value;
+            
+            if (password && password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            // Update profile info
+            profileName.textContent = settingsName.value;
+            profileEmail.textContent = settingsEmail.value;
+            
+            alert('Settings updated successfully!');
+            
+            // Reset password fields
+            document.getElementById('settings-password').value = '';
+            document.getElementById('settings-confirm-password').value = '';
+        });
+    </script>
+</body>
+</html>
